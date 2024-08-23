@@ -60,12 +60,22 @@ export default class clsOptionMenu{
 					var draggable_cstm_css = document.getElementsByClassName('draggable_cstm_css');		
 					var draggable_cstm_css_arr = Array.from(draggable_cstm_css);
 					
-					optionMenu.remove();
-					objectStorage.remove();
-					customDrag_script_main.remove();
-					editFunctioNMenu.remove();
+					if(optionMenu){
+						optionMenu.remove();
+					}
+					if(objectStorage){
+						objectStorage.remove();
+					}
+					if(customDrag_script_main){
+						customDrag_script_main.remove();
+					}
+					if(editFunctioNMenu){
+						editFunctioNMenu.remove();
+					}
 					draggable_cstm_css_arr.forEach(function(e,i){
-						e.remove();
+						if(e){
+							e.remove();
+						}
 					})
 					
 					var modifiedHtml = document.documentElement.outerHTML;
