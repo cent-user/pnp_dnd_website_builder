@@ -1,5 +1,5 @@
 import clsObjectStorage from './objectStorage.js';
-import clsOptionMenu from './OptionMenu.js';
+import clsOptionMenu from './optionMenu.js';
 import clsDragFunctionController from './dragFunction.js';
 import clsEditFunctionController from './editFunction.js';
 
