@@ -57,6 +57,7 @@ class mouseStat{
 			{
 				"div":true
 				,"html":true
+				,"body":true
 			}
 			
 		this.invalidDragId = //id that cant be drag (use for menu, so it cant be targeted)
