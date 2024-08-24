@@ -87,8 +87,10 @@ export default class clsObjectStorage{
 	}
 	
 	processor(){
+
 		var objectStorage_fileSelector = this.thisElement.querySelector('#objectStorage_fileSelector');
 		var objectStorage_liveComponent_getButton = this.thisElement.querySelector('#objectStorage_liveComponent_getButton');
+
 		/////////////////// file selector inputted, load component list ///////////////////////////////////
 			objectStorage_fileSelector.addEventListener('change',function(e){
 				var files = e.target.files;
