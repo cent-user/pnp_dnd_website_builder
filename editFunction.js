@@ -3,10 +3,8 @@ export default class clsEditFunctionController{
 		this.currActive = null; //to get what should be activated
 		this.currActive_activated = null; //to check if its aleady activated (so it can only run once)
 		this.currActive_lastMousePos = {x:0,y:0};
-		this.currActive_attributes = {};
+
 		this.thisElement = null;
-		this.thisElementTextArea = null;
-		
 		this.thisElementTable = null;
 		this.mouseStat = pmouseStat;
 
@@ -15,7 +13,7 @@ export default class clsEditFunctionController{
 	
 	addComponent(){
 		this.thisElement = this.createComponentFromString(this.storageComponent());
-		this.thisElementTable = this.thisElement.querySelector('#editFunctioNMenu_table');
+		this.thisElementTable = this.thisElement.querySelector('#editFunctionMenu_table');
 		document.body.appendChild(this.thisElement);	
 	}
 
@@ -43,17 +41,30 @@ export default class clsEditFunctionController{
 				
 				this.thisElement.style.top = (this.currActive_lastMousePos.y - offsetHeight) +"px";
 				this.thisElement.style.left = (this.currActive_lastMousePos.x - offsetWidth) +"px";
+				
 
 				this.currActive_activated = true;
+			} 
+			
+			if(this.currActive){ //if there are current active element selected
+				this.syncElementToTableValue();
+				this.syncTable();
 			}
 		}
 	}
 
 	syncCurrTarget(){ 
+		//if active target not the same as selected target, and the selected target isnt part of this element
+		if((this.mouseStat.active_target != this.mouseStat.selected_target) && (this.mouseStat.active_target != this.currActive) ){
+			this.currActive = null;
+			this.currActive_activated = null;
+		}
+
 		if(this.mouseStat.selected_target) { //if item selected
-			if(this.mouseStat.selected_target != this.thisElement){ //if item selected not itself
+			if(this.mouseStat.selected_target != this.thisElement && !this.hasAncestorWithIdObj(this.mouseStat.selected_target,{'editFunctionMenu':true})){ //if item selected not itself or not child of itself
 				if(this.mouseStat.active_target == this.mouseStat.selected_target) { //if selected item can be activated
 					if(this.currActive != this.mouseStat.selected_target ) {  //if selected item not the currently activated
+						this.currActive_activated = null; //if assign new target, make it reactivate, so its know if its new target
 						this.currActive = this.mouseStat.active_target;
 						this.currActive_lastMousePos = {x:this.mouseStat.clientPageX,y:this.mouseStat.clientPageY};
 					}
@@ -61,15 +72,12 @@ export default class clsEditFunctionController{
 			}
 		}
 		
-		if(this.mouseStat.active_target != this.mouseStat.selected_target){
-			this.currActive = null;
-			this.currActive_activated = null;
-		}
+		
 	}
 	
 	storageComponent(){
 		let comp = `
-		<div id='editFunctioNMenu' 
+		<div id='editFunctionMenu' 
 			style='
 			position:fixed;
 			padding:10px;
@@ -80,7 +88,7 @@ export default class clsEditFunctionController{
 			'
 		>
 			Attributes:
-			<table id='editFunctioNMenu_table'>
+			<table id='editFunctionMenu_table'>
 				<thead>
 					<tr>
 						<td>Name</td>
@@ -101,7 +109,6 @@ export default class clsEditFunctionController{
 		//make div into node
 		var temp_div = document.createElement("div");
 		temp_div.insertAdjacentHTML("beforeend",elString);
-		console.log(temp_div);
 		//get original div
 		var original_div = temp_div.children[0];
 		
@@ -139,7 +146,7 @@ export default class clsEditFunctionController{
 		return div;
 	}
 
-	syncTableCurrActiveAttribute(){
+	syncTableCurrActiveAttribute(){ // sync table for the current active element
 		//remove because its this plugin class
 			this.currActive.classList.remove("draggable-hover");
 			this.currActive.classList.remove("draggable_no_hover");
@@ -149,40 +156,82 @@ export default class clsEditFunctionController{
 		var thisElementTbody = 	this.thisElementTable.getElementsByTagName('tbody');
 		thisElementTbody = thisElementTbody[0];
 		thisElementTbody.innerHTML = ""; //reset the table tbody
-		console.log(thisElementTbody);
-		console.log(this.thisElementTable);
 		
 		for(let i = 0; i < attributes.length;i++){
-			
-
-			let tr_node = document.createElement('tr');
-			let td_node_localname = document.createElement('td');
-			let td_node_value = document.createElement('td');
-			let input_node_localname = document.createElement('input');
-			let input_node_value = document.createElement('textarea');
-
-			input_node_value.rows = 1;
-			input_node_localname.classList.add("element_style_localname");
-			input_node_value.classList.add("element_style_value");
-
-			td_node_localname.append(input_node_localname);
-			td_node_value.append(input_node_value);
-			tr_node.append(td_node_localname);
-			tr_node.append(td_node_value);
-			thisElementTbody.append(tr_node);
-			
-			input_node_localname.value=attributes[i].localName;
-			input_node_value.value=attributes[i].nodeValue;
-			
-
+			this.addNewRowTable(attributes[i].localName,attributes[i].nodeValue);
 		}
 	}
 
-	syncTable(){
-		var table = this.thisElementTable;
-		var lastRow = table.rows[table.rows.length]
+	syncTable(){ // sync tabel if last row not empty, add new row
+		let tbody = this.thisElementTable.querySelector('tbody');
+		let rows = tbody.querySelectorAll('tr');
+		let lastRow = rows[rows.length - 1]
+
+		let localname_el = lastRow.querySelector('.element_style_localname');
+		let value_el = lastRow.querySelector('.element_style_value');
+
+		if(localname_el.value != '' || value_el.value !=''){
+			this.addNewRowTable();
+		}
 	}
 
+	addNewRowTable(localname_value='',value_value=''){
+		var thisElementTbody = 	this.thisElementTable.getElementsByTagName('tbody');
+		thisElementTbody = thisElementTbody[0];
 
+		let tr_node = document.createElement('tr');
+		let td_node_localname = document.createElement('td');
+		let td_node_value = document.createElement('td');
+		let input_node_localname = document.createElement('input');
+		let input_node_value = document.createElement('textarea');
+
+		input_node_value.rows = 1;
+		input_node_localname.classList.add("element_style_localname");
+		input_node_value.classList.add("element_style_value");
+
+		td_node_localname.append(input_node_localname);
+		td_node_value.append(input_node_value);
+		tr_node.append(td_node_localname);
+		tr_node.append(td_node_value);
+		thisElementTbody.append(tr_node);
+
+		input_node_localname.value=localname_value;
+		input_node_value.value=value_value;
+	}
+
+	syncElementToTableValue(){
+		var tbody = this.thisElementTable.querySelector('tbody');
+		var rows = tbody.querySelectorAll('tr');
+
+		for(var i = 0; i< rows.length;i++){
+			var localname_el = rows[i].querySelector('.element_style_localname');
+			var value_el = rows[i].querySelector('.element_style_value');
+			if(localname_el.value){
+				this.currActive.setAttribute(localname_el.value,value_el.value);
+			}
+		}
+	}
+
+	hasAncestorWithIdObj(element, idObj) { //check if id in list of object
+		// Traverse up the DOM tree
+		if(element === document.documentElement || element === document.body){ //if html or body, return true ,so it will not cause error
+			return true;
+		}
+			
+		while (element) {
+			if(element === document.documentElement || element === document.body){ //if html or body, return true ,so it will not cause error
+				break;
+			}
+			
+			// Check if the current element has the specified ID
+			if (idObj[element.id]) {
+				return true;
+			}
+			// Move to the parent element
+			element = element.parentElement;
+		}
+		// No ancestor with the specified ID found
+		return false;
+	}
 	
 }

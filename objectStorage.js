@@ -95,7 +95,6 @@ export default class clsObjectStorage{
 	processor(){
 		var objectStorage_fileSelector = document.getElementById('objectStorage_fileSelector');
 		var objectStorage_liveComponent_getButton = document.getElementById('objectStorage_liveComponent_getButton');
-		console.log(objectStorage_liveComponent_getButton);
 		/////////////////// file selector inputted, load component list ///////////////////////////////////
 			objectStorage_fileSelector.addEventListener('change',function(e){
 				var files = e.target.files;
@@ -180,7 +179,7 @@ export default class clsObjectStorage{
 		//make div into node
 		var temp_div = document.createElement("div");
 		temp_div.insertAdjacentHTML("beforeend",elString);
-		console.log(temp_div);
+		
 		//get original div
 		var original_div = temp_div.children[0];
 		
