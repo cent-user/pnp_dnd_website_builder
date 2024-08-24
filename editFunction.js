@@ -79,8 +79,17 @@ export default class clsEditFunctionController{
 			z-index:50;
 			'
 		>
+			Attributes:
 			<table id='editFunctioNMenu_table'>
-				
+				<thead>
+					<tr>
+						<td>Name</td>
+						<td>Value</td>
+					</tr>
+				</thead>
+				<tbody>
+
+				</tbody>
 			</table>
 		</div>
 		`;
@@ -137,7 +146,8 @@ export default class clsEditFunctionController{
 		//
 
 		var attributes = this.currActive.attributes;
-		this.thisElementTable.innerHTML = ""; //reset the table
+		var thisElementTbody = 	this.thisElementTable.getElementsByTagName('tbody');
+		thisElementTbodye.innerHTML = ""; //reset the table
 		console.log(this.currActive.classList);
 		for(let i = 0; i < attributes.length;i++){
 			
@@ -149,12 +159,14 @@ export default class clsEditFunctionController{
 			let input_node_value = document.createElement('textarea');
 
 			input_node_value.rows = 1;
+			input_node_localname.classList.add("element_style_localname");
+			input_node_value.classList.add("element_style_value");
 
 			td_node_localname.append(input_node_localname);
 			td_node_value.append(input_node_value);
 			tr_node.append(td_node_localname);
 			tr_node.append(td_node_value);
-			this.thisElementTable.append(tr_node);
+			thisElementTbody.append(tr_node);
 			
 			input_node_localname.value=attributes[i].localName;
 			input_node_value.value=attributes[i].nodeValue;
