@@ -148,7 +148,9 @@ export default class clsEditFunctionController{
 		var attributes = this.currActive.attributes;
 		var thisElementTbody = 	this.thisElementTable.getElementsByTagName('tbody');
 		thisElementTbody.innerHTML = ""; //reset the table
-		console.log(this.currActive.classList);
+		console.log(thisElementTbody);
+		console.log(this.thisElementTable);
+		
 		for(let i = 0; i < attributes.length;i++){
 			
 
