@@ -1,6 +1,9 @@
 This is a prototype of plug and play, drag and drop, website builder
 
-to use just add :
+testing url :
+https://cent-user.github.io/pnp_dnd_website_builder/main.html
+
+to use locally just add :
 <script type="module" src="https://cent-user.github.io/pnp_dnd_website_builder/main.js"/></script>
 
 Purpose :
