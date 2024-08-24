@@ -73,7 +73,7 @@ class mouseStat{
 	var vmouseStat = new mouseStat();
 	
 	var objectStorage = new clsObjectStorage();
-	var optionMenu = new clsOptionMenu();
+	var optionMenu = new clsOptionMenu(vmouseStat);
 	var dragFunction_controller = new clsDragFunctionController(vmouseStat);
 	var editFunction_controller = new clsEditFunctionController(vmouseStat);
 
@@ -87,7 +87,8 @@ class mouseStat{
 		dragFunction_controller.main(optionMenu.functionType,optionMenu.dragType); //controller of drag function base od option menu
 		editFunction_controller.main(optionMenu.functionType); //controller of edit function base of option menu
 
-		requestAnimationFrame(update.bind(this));
+
+	requestAnimationFrame(update.bind(this));
 	}
 	requestAnimationFrame(update.bind(this));
 

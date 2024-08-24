@@ -1,9 +1,11 @@
 export default class clsOptionMenu{
-	constructor(a){
+	constructor(pmouseStat){
+		this.mouseStat = pmouseStat;
 		this.functionType = 0;
 		this.dragType = 0;
 		this.test3 = "";
-		this.optionMenu = "";;
+		this.thisElement = null;
+
 		this.main();
 		this.controller();
 	}	
@@ -13,6 +15,7 @@ export default class clsOptionMenu{
 					{'id':0,'label':'Positioning'}
 					,{'id':1,'label':'Layouting'}
 					,{'id':2,'label':'editing'}
+					,{'id':3,'label':'delete'}
 				];
 	}
 	
@@ -25,12 +28,12 @@ export default class clsOptionMenu{
 	
 	main(){
 		////////////////////////// /display component and script //////////////////////////////////////
-		document.body.insertAdjacentHTML("afterend",this.storageComponent());
+		this.thisElement = this.createComponentFromString(this.storageComponent());
+		document.body.appendChild(this.thisElement);	
 		
-		this.optionMenu = document.getElementById('optionMenu');
 		var script = document.createElement("script");
 		script.innerHTML = this.mainScript();
-		this.optionMenu.appendChild(script);
+		this.thisElement.appendChild(script);
 		///////////////////////////////////////////////////////////////////////////////////////////////
 	}
 
@@ -170,6 +173,91 @@ export default class clsOptionMenu{
 		return retStr;
 	}
 	
+	createComponentFromString(elString){
+		//make div into node
+		var temp_div = document.createElement("div");
+		temp_div.insertAdjacentHTML("beforeend",elString);
+
+		//get original div
+		var original_div = temp_div.children[0];
+		
+		//get just the div
+		var cleaned_div =  original_div.cloneNode(true);
+		var cleaned_div_style_tags = cleaned_div.querySelectorAll('style');
+		cleaned_div_style_tags.forEach(style => style.remove());
+		
+		var cleaned_div_script_tags = cleaned_div.querySelectorAll('script');
+		cleaned_div_script_tags.forEach(script => script.remove());
+		
+		
+		
+		//rebuild the div 
+		var div = cleaned_div;
+			
+			//make script into node
+			const scripts = original_div.getElementsByTagName("script");
+			for(var i = 0; i < scripts.length; i++){
+				var script_node = document.createElement("script");
+				script_node.textContent  = scripts[i].innerHTML;
+				div.appendChild(script_node);
+			}
+			//
+			
+			//make style into node
+			const styles = original_div.getElementsByTagName("style");
+			for(var i = 0; i < styles.length; i++){
+				var style_node = document.createElement("style");
+				style_node.textContent  = styles[i].innerHTML;
+				div.appendChild(style_node);
+			}
+			//
+	
+		return div;
+	}
+
+	hasAncestorWithIdObj(element, idObj) { //check if id in list of object
+		// Traverse up the DOM tree
+		if(element === document.documentElement || element === document.body){ //if html or body, return true ,so it will not cause error
+			return true;
+		}
+			
+		while (element) {
+			if(element === document.documentElement || element === document.body){ //if html or body, return true ,so it will not cause error
+				break;
+			}
+			
+			// Check if the current element has the specified ID
+			if (idObj[element.id]) {
+				return true;
+			}
+			// Move to the parent element
+			element = element.parentElement;
+		}
+		// No ancestor with the specified ID found
+		return false;
+	}
+
+	hasAncestorWithIdObj_strict(element, idObj) { //check if id in list of object
+		// Traverse up the DOM tree
+		if(element === document.documentElement || element === document.body){ //if html or body, return true ,so it will not cause error
+			return false;
+		}
+			
+		while (element) {
+			if(element === document.documentElement || element === document.body){ //if html or body, return true ,so it will not cause error
+				break;
+			}
+			
+			// Check if the current element has the specified ID
+			if (idObj[element.id]) {
+				return true;
+			}
+			// Move to the parent element
+			element = element.parentElement;
+		}
+		// No ancestor with the specified ID found
+		return false;
+	}
 }
 
 (function(){

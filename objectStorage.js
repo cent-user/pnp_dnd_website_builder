@@ -3,21 +3,15 @@ export default class clsObjectStorage{
 		this.component = [];
 		this.lastSelectedComponent = null;
 		this.lastSelectedComponentElement = null;
-		
+		this.thisElement = null;
 		this.customCSS();
 		this.main();
 		this.processor();
 	}
 	
 	main(){
-		document.body.insertAdjacentHTML("afterend",this.storageComponent());
-		
-		const storageDiv = document.getElementById('objectStorage');
-		var script = document.createElement("script");
-		script.textContent  = `
-			
-		`;
-		storageDiv.appendChild(script);
+		this.thisElement = this.createComponentFromString(this.storageComponent());
+		document.body.appendChild(this.thisElement);	
 	}
 	
 	storageComponent(){
@@ -93,9 +87,8 @@ export default class clsObjectStorage{
 	}
 	
 	processor(){
-		var objectStorage_fileSelector = document.getElementById('objectStorage_fileSelector');
-		var objectStorage_liveComponent_getButton = document.getElementById('objectStorage_liveComponent_getButton');
-		console.log(objectStorage_liveComponent_getButton);
+		var objectStorage_fileSelector = this.thisElement.querySelector('#objectStorage_fileSelector');
+		var objectStorage_liveComponent_getButton = this.thisElement.querySelector('#objectStorage_liveComponent_getButton');
 		/////////////////// file selector inputted, load component list ///////////////////////////////////
 			objectStorage_fileSelector.addEventListener('change',function(e){
 				var files = e.target.files;
@@ -106,8 +99,9 @@ export default class clsObjectStorage{
 		
 		/////////////////// if get live component button pressed, realize the inputted component ///////////////////
 			objectStorage_liveComponent_getButton.addEventListener('mousedown',function(e){
-				var stringForElement = document.getElementById('objectStorage_liveComponent_textarea');
+				var stringForElement = this.thisElement.querySelector('#objectStorage_liveComponent_textarea');
 				var createdComponent = this.createComponentFromString(stringForElement.value);
+				document.body.appendChild(createdComponent);
 				this.lastSelectedComponentElement = createdComponent;
 			}.bind(this));
 		//////////////////////////////////////////////////////////////////////////////////////////////////
@@ -119,12 +113,12 @@ export default class clsObjectStorage{
 
 		this.lastSelectedComponent = this.getComponent(component_name);
 			var createdComponent = this.createComponentFromString(this.lastSelectedComponent.content);
-			
+		document.body.appendChild(createdComponent);	
 		this.lastSelectedComponentElement = createdComponent;
 	}
 	
 	displayItemBtn(objIndex,objName){
-		const objectStorage_componentField = document.getElementById('objectStorage_componentField');
+		const objectStorage_componentField = this.thisElement.querySelector('#objectStorage_componentField');
 		var el_div = document.createElement("div");
 		var el_btn = document.createElement("button");
 		
@@ -144,7 +138,7 @@ export default class clsObjectStorage{
 	
 	loadComponent(folder){
 		/* reset data when load component so its not stacking */
-			const objectStorage_componentField = document.getElementById('objectStorage_componentField');
+			const objectStorage_componentField = this.thisElement.querySelector('#objectStorage_componentField');
 			this.component = [];	
 			objectStorage_componentField.innerHTML="";
 		/* end reset data when load component so its not stacking */
@@ -180,7 +174,7 @@ export default class clsObjectStorage{
 		//make div into node
 		var temp_div = document.createElement("div");
 		temp_div.insertAdjacentHTML("beforeend",elString);
-		console.log(temp_div);
+
 		//get original div
 		var original_div = temp_div.children[0];
 		
@@ -214,10 +208,6 @@ export default class clsObjectStorage{
 				div.appendChild(style_node);
 			}
 			//
-
-		document.body.appendChild(div);
-		
-		
 	
 		return div;
 	}
