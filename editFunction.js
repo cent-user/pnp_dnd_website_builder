@@ -214,7 +214,7 @@ export default class clsEditFunctionController{
 		for(var i = 0; i< rows.length;i++){
 			var localname_el = rows[i].querySelector('.element_style_localname');
 			var value_el = rows[i].querySelector('.element_style_value');
-			if(localname_el.value){
+			if(localname_el.value && document.activeElement != localname_el){
 				this.currActive.setAttribute(localname_el.value,value_el.value);
 			}
 		}
