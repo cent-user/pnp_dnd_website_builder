@@ -128,7 +128,8 @@ export default class clsObjectStorage{
 		el_btn.id = objIndex;
 		el_btn.innerHTML = objName;
 		el_btn.classList.add("objectStorage_itemBtn");
-		
+		el_btn.style.width = '100%';
+		el_btn.style.wordBreak='break-all';
 		el_btn.addEventListener('mousedown',function(e){
 			this.selectedObjectProcessor(e);
 		}.bind(this));
