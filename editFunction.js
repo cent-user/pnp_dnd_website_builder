@@ -108,8 +108,8 @@ export default class clsEditFunctionController{
 			this.currentMenu.style.top = '';
 			this.currentMenu.style.left = '';
 			this.currentMenu.style.bottom = 0+'px';
-			this.currentMenu.style.width = '100vw';
-			this.currentMenu.style.height = '40vh';
+			this.currentMenu.style.width = '100%';
+			this.currentMenu.style.height = '40%';
         }
 	}
 	
@@ -212,7 +212,9 @@ export default class clsEditFunctionController{
 			tbody.innerHTML = '';
 			var attributes = this.activeTargetEl.attributes;
 			for(var i = 0; i < attributes.length;i++){
-				this.addContentDisplayRow(attributes[i].localName,attributes[i].nodeValue);
+				var localname = attributes[i].localName;
+				var localname2 = attributes[i].localName.toLowerCase()
+				this.addContentDisplayRow(localname2,attributes[i].nodeValue);
 			}
 
 			if(attributes.length == 0){
@@ -255,9 +257,9 @@ export default class clsEditFunctionController{
 		if(this.clsMouseStat.state.smallWindow == 1){
 			//if small screen/mobile
 			input_node_localname.style.position = 'relative';
-			input_node_localname.style.height = '5vh';
+			input_node_localname.style.height = '5%';
 			input_node_value.style.position = 'relative';
-			input_node_value.style.height = '5vh';
+			input_node_value.style.height = '5%';
 		}
 	}
 
@@ -270,8 +272,8 @@ export default class clsEditFunctionController{
 			var value_el = rows[i].querySelector('textarea');
 
 			if(localname_el.value && document.activeElement != localname_el){
-				avaiable_attribute.push(localname_el.value);
-				this.activeTargetEl.setAttribute(localname_el.value,value_el.value);
+				avaiable_attribute.push(localname_el.value.toLowerCase());
+				this.activeTargetEl.setAttribute(localname_el.value.toLowerCase(),value_el.value);
 			}
 		}
 
