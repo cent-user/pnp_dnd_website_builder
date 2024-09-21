@@ -115,10 +115,12 @@ export default class clsEditFunctionController{
 			this.currentMenu.style.width = '100%';
 			this.currentMenu.style.height = '50%';
 
+			/*
 			var all_child_el = this.currentMenu.querySelectorAll('input,textarea,select,button');
 			all_child_el.forEach(element => {
 				element.style.fontSize = '2.5em';
 			});
+			*/
 		}
 	}
 	
