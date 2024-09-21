@@ -84,7 +84,6 @@ export default class clsEditFunctionController{
 		div.classList.add('clsEditFunctionController');
 		div.style.backgroundColor = 'red';
 		div.style.minWidth = '100px';
-		div.style.maxHeight = '50vh';
 		div.style.minHeight = '100px';
 		div.style.backgroundColor = '#aaddddaa';
 		div.style.position = 'fixed';
@@ -109,7 +108,7 @@ export default class clsEditFunctionController{
 			this.currentMenu.style.left = '';
 			this.currentMenu.style.bottom = 0+'px';
 			this.currentMenu.style.width = '100%';
-			this.currentMenu.style.height = '40%';
+			this.currentMenu.style.height = '50%';
         }
 	}
 	
