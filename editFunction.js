@@ -376,6 +376,15 @@ export default class clsEditFunctionController{
 				background-color:#eeeeee77;
 				outline:5px dashed rgb(150,200,255);
 			}
+
+			
 		`,styleSheet.cssRules.length);	
+		
+		styleSheet.insertRule(`
+			.clsEditFunctionController input,textarea,select,button{
+				font-size:2.5em;
+			}
+		`,styleSheet.cssRules.length);
+		
 	}
 }
