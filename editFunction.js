@@ -1,191 +1,228 @@
 export default class clsEditFunctionController{
-	constructor(pmouseStat){
-		this.currActive = null; //to get what should be activated
-		this.currActive_activated = null; //to check if its aleady activated (so it can only run once)
-		this.currActive_lastMousePos = {x:0,y:0};
+	constructor(clsMouseStat){
+		this.clsMouseStat = clsMouseStat;
+		
+		//dom tree element
+		this.currentMenu = null; 
+		this.currSelectParentList = null;
+		this.currTableAttrList = null;
+		
+		//state element
+		this.currTargetEl = null; //to check whatn target click
+		this.lastTargetEl = null; //to check when target changed
+		this.activeTargetEl = null //active target, default is curr target, but can be chosen by currselectparentlist
+		this.lastMenuPos = {'top':0,'left':0};
+		this.currParentList = null;
+		this.stateTrigger = [];
 
-		this.thisElement = null;
-		this.thisElementTable = null;
-		this.mouseStat = pmouseStat;
-
-		this.addComponent();
+		
+		
+		this.menuDisplay();
+		this.ui_style();
+		
 	}
 	
-	addComponent(){
-		this.thisElement = this.createComponentFromString(this.storageComponent());
-		this.thisElementTable = this.thisElement.querySelector('#editFunctionMenu_table');
-		document.body.appendChild(this.thisElement);	
-	}
-
-	main(function_type = 0){
-		if(!function_type==2 || !this.currActive){
-			this.thisElement.style.display = 'none';
+	process(){
+		this.currTargetEl = this.clsMouseStat.lastElementValidTarget.down;
+		
+		
+		
+		//state check
+		if(this.lastTargetEl != this.currTargetEl){ //if target change
+			if(!this.checkElementAllParentContainArrClassj(this.currTargetEl,this.clsMouseStat.invalidClass)){ //check if target contain invalid class parent,if not
+				this.stateTrigger['change_target'] = 1;
+			} else {
+				this.currTargetEl = this.lastTargetEl;
+			}
+		}
+		
+		if(this.currParentList){
+			if(this.activeTargetEl != this.currParentList[this.currSelectParentList.value]){
+				this.stateTrigger['change_active'] = 1;
+			}
 		}
 
-		if(function_type==2){ //only run if fucntion type 2
-			this.syncCurrTarget(); //sync curr target base on selected target
-			if(this.currActive && !this.currActive_activated){ //if curr target and target hasn't been activated, display and process
-				let offsetWidth = 0;
-				let offsetHeight = 0;
+		//ui process
+		if(this.currTargetEl == null || this.currTargetEl.tagName == 'HTML' || this.clsMouseStat.lastElementValidTarget.down.id == 'clsEditFunctionController_close' ){
+			this.currentMenu.style.display = 'none';
+			this.lastTargetEl = null;
+			this.activeTargetEl = null;
+			this.currParentList = null;
+			this.ui_processor();
+		} else {
+			this.currentMenu.style.display = 'block';
+		}
+		
+		
+		//state process
+		if(this.stateTrigger['change_target'] == 1){
+			this.currParentList = this.getAllParent(this.currTargetEl);
+			this.lastTargetEl = this.currTargetEl;
+			
+			this.menuContentDisplay();
+			this.syncContentDisplay();
+			this.syncMenuDisplayReposition();
+		}
+		
+		if(this.stateTrigger['change_active'] == 1){
+			this.activeTargetEl = this.currParentList[this.currSelectParentList.value];
+			this.ui_processor();
+			this.syncContentDisplay();
+		}
+		
+		if(this.activeTargetEl){
+			this.syncContentDisplayToElement();
+			this.resizeDisplay();
+		}
+		this.stateTrigger['change_target'] = 0;
+		this.stateTrigger['change_active'] = 0;
+	}
+	
+	menuDisplay(){
+		//component div
+		var div = document.createElement("div");
+		div.classList.add('clsEditFunctionController');
+		div.style.backgroundColor = 'red';
+		div.style.minWidth = '100px';
+		div.style.maxHeight = '50vh';
+		div.style.minHeight = '100px';
+		div.style.backgroundColor = '#aaddddaa';
+		div.style.position = 'fixed';
+		div.style.overflow = 'scroll';
+
+		div.style.zIndex = "2";
+		this.currentMenu = div;
+		document.body.appendChild(div);
+	}
+	
+	resizeDisplay(){
+		if(this.clsMouseStat.state.smallWindow == 0){
+			this.currentMenu.style.width = '';
+			this.currentMenu.style.height = '';
+			this.currentMenu.style.bottom = '';
+			this.currentMenu.style.top = this.lastMenuPos.top;
+			this.currentMenu.style.left = this.lastMenuPos.left;
+        }
+
+        if(this.clsMouseStat.state.smallWindow == 1){
+			this.currentMenu.style.top = '';
+			this.currentMenu.style.left = '';
+			this.currentMenu.style.bottom = 0+'px';
+			this.currentMenu.style.width = '100vw';
+			this.currentMenu.style.height = '40vh';
+        }
+	}
+	
+	menuContentDisplay(){
+		//parent select option (incase the object is stacked and cant click on the div behind it)
+		this.currentMenu.innerHTML = '';
+		if(this.currParentList){
+			//header div (for sticky)
+			var headerDiv =  document.createElement("div");
+			headerDiv.style.position = "sticky";
+			headerDiv.style.top = "0px";
+			headerDiv.style.zIndex = "2";
+			//make select option
+			var selectParent = document.createElement("select");
+			for(var pl = 0; pl < Object.keys(this.currParentList).length; pl++){
+				var vEl = Object.values(this.currParentList)[pl];
+				var optionParent = document.createElement("option");
 				
-				this.syncTableCurrActiveAttribute();
-				this.thisElement.style.display = 'block';
-				// make it so if element is in one corner, it reverse the positiob
-					if(this.currActive_lastMousePos.x > document.documentElement.scrollWidth/1.5){
-						offsetWidth = parseInt(this.thisElement.clientWidth);
-					}
-					if(this.currActive_lastMousePos.y > document.documentElement.scrollHeight/1.5){
-						offsetHeight = parseInt(this.thisElement.clientHeight);
-					}
-				//
+				optionParent.value = pl;
+				optionParent.innerHTML = vEl.tagName;
 				
-				this.thisElement.style.top = (this.currActive_lastMousePos.y - offsetHeight) +"px";
-				this.thisElement.style.left = (this.currActive_lastMousePos.x - offsetWidth) +"px";
+				selectParent.appendChild(optionParent);
+			}
+		
+			//make close button
+			var btnClose = document.createElement("button");
+			btnClose.innerHTML = 'X'
+			btnClose.id = 'clsEditFunctionController_close';
+		
+			//make input field
+			var attrTable = document.createElement('table'); 
+			var attrTableBody = document.createElement('tbody'); 
+			
+			attrTable.append(attrTableBody);
+			headerDiv.appendChild(selectParent);
+			headerDiv.appendChild(btnClose);
+			this.currentMenu.appendChild(headerDiv);
+			this.currentMenu.appendChild(attrTable);
+			
+
+			if(this.clsMouseStat.state.smallWindow == 0){
+				//if big screen/desktop
+				selectParent.style.width = '80%';
+				selectParent.style.height = '10%';
 				
+				btnClose.style.width = '20%';
+				btnClose.style.height = '10%';
+				
+				attrTable.style.position = 'relative';
+				attrTable.style.width = '100%'; 
 
-				this.currActive_activated = true;
-			} 
-			
-			if(this.currActive){ //if there are current active element selected
-				this.syncElementToTableValue();
-				this.syncTable();
-			}
-		}
-
-		if(function_type==3){
-			this.syncCurrTarget();
-			if(this.currActive){
-				this.currActive.remove();
 			}
 			
-		}
-	}
+			if(this.clsMouseStat.state.smallWindow == 1){
+				//if small screen/mobile
+				headerDiv.style.height = '10%';
 
-	syncCurrTarget(){ 
-		//if active target not the same as selected target, and the selected target isnt part of this element
-		if((this.mouseStat.active_target != this.mouseStat.selected_target) && (this.mouseStat.active_target != this.currActive) ){
-			this.currActive = null;
-			this.currActive_activated = null;
-		}
-
-		if(this.mouseStat.selected_target) { //if item selected
-			if(this.mouseStat.selected_target != this.thisElement && !this.hasAncestorWithIdObj(this.mouseStat.selected_target,{'editFunctionMenu':true})){ //if item selected not itself or not child of itself
-				if(this.mouseStat.active_target == this.mouseStat.selected_target) { //if selected item can be activated
-					if(this.currActive != this.mouseStat.selected_target ) {  //if selected item not the currently activated
-						this.currActive_activated = null; //if assign new target, make it reactivate, so its know if its new target
-						this.currActive = this.mouseStat.active_target;
-						this.currActive_lastMousePos = {x:this.mouseStat.clientPageX,y:this.mouseStat.clientPageY};
-					}
-				}
+				selectParent.style.width = '80%';
+				selectParent.style.height = '100%';
+				
+				btnClose.style.width = '20%';
+				btnClose.style.height = '100%';
+				
+				attrTable.style.width = '100%'; 
 			}
-		}
-		
-		
-	}
-	
-	storageComponent(){
-		let comp = `
-		<div id='editFunctionMenu' 
-			style='
-			position:fixed;
-			padding:10px;
-			background-color:#ffffee55;
-			display:none;
-			min-width:10vw;
-			z-index:50;
-			'
-		>
-			Attributes:
-			<table id='editFunctionMenu_table'>
-				<thead>
-					<tr>
-						<td>Name</td>
-						<td>Value</td>
-					</tr>
-				</thead>
-				<tbody>
-
-				</tbody>
-			</table>
-		</div>
-		`;
-		return comp;
-	}
-	
-	
-	createComponentFromString(elString){
-		//make div into node
-		var temp_div = document.createElement("div");
-		temp_div.insertAdjacentHTML("beforeend",elString);
-		//get original div
-		var original_div = temp_div.children[0];
-		
-		//get just the div
-		var cleaned_div =  original_div.cloneNode(true);
-		var cleaned_div_style_tags = cleaned_div.querySelectorAll('style');
-		cleaned_div_style_tags.forEach(style => style.remove());
-		
-		var cleaned_div_script_tags = cleaned_div.querySelectorAll('script');
-		cleaned_div_script_tags.forEach(script => script.remove());
-		
-		
-		
-		//rebuild the div 
-		var div = cleaned_div;
 			
-			//make script into node
-			const scripts = original_div.getElementsByTagName("script");
-			for(var i = 0; i < scripts.length; i++){
-				var script_node = document.createElement("script");
-				script_node.textContent  = scripts[i].innerHTML;
-				div.appendChild(script_node);
+			this.currSelectParentList = selectParent;
+			this.currTableAttrList = attrTable;
+		} else {
+			this.currSelectParentList = null;
+		}
+	}
+
+	syncMenuDisplayReposition(){
+		if(this.clsMouseStat.state.smallWindow == 0){
+			let top_offset;
+			let left_offset;
+			if(this.clsMouseStat.mouseAtSection.down == 1){
+				left_offset =  parseInt(this.currentMenu.clientHeight,10);
+			} else {
+				top_offset = 0;
 			}
-			//
 			
-			//make style into node
-			const styles = original_div.getElementsByTagName("style");
-			for(var i = 0; i < styles.length; i++){
-				var style_node = document.createElement("style");
-				style_node.textContent  = styles[i].innerHTML;
-				div.appendChild(style_node);
+			if(this.clsMouseStat.mouseAtSection.right == 1){
+				left_offset =  parseInt(this.currentMenu.clientWidth,10);
+			} else {
+				left_offset = 0;
 			}
-			//
+			this.currentMenu.style.top = this.clsMouseStat.page.y - top_offset +'px';
+			this.currentMenu.style.left = this.clsMouseStat.page.x - left_offset +'px';
 
-		return div;
-	}
-
-	syncTableCurrActiveAttribute(){ // sync table for the current active element
-		//remove because its this plugin class
-			this.currActive.classList.remove("draggable-hover");
-			this.currActive.classList.remove("draggable_no_hover");
-		//
-
-		var attributes = this.currActive.attributes;
-		var thisElementTbody = 	this.thisElementTable.getElementsByTagName('tbody');
-		thisElementTbody = thisElementTbody[0];
-		thisElementTbody.innerHTML = ""; //reset the table tbody
-		
-		for(let i = 0; i < attributes.length;i++){
-			this.addNewRowTable(attributes[i].localName,attributes[i].nodeValue);
+			this.lastMenuPos.top = this.currentMenu.style.top;
+			this.lastMenuPos.left = this.currentMenu.style.left;
 		}
 	}
 
-	syncTable(){ // sync tabel if last row not empty, add new row
-		let tbody = this.thisElementTable.querySelector('tbody');
-		let rows = tbody.querySelectorAll('tr');
-		let lastRow = rows[rows.length - 1]
+	syncContentDisplay(){
+		if(this.activeTargetEl){
+			var tbody = this.currTableAttrList.querySelector('tbody');
+			tbody.innerHTML = '';
+			var attributes = this.activeTargetEl.attributes;
+			for(var i = 0; i < attributes.length;i++){
+				this.addContentDisplayRow(attributes[i].localName,attributes[i].nodeValue);
+			}
 
-		let localname_el = lastRow.querySelector('.element_style_localname');
-		let value_el = lastRow.querySelector('.element_style_value');
-
-		if(localname_el.value != '' || value_el.value !=''){
-			this.addNewRowTable();
+			if(attributes.length == 0){
+				this.addContentDisplayRow();
+			}
 		}
 	}
 
-	addNewRowTable(localname_value='',value_value=''){
-		var thisElementTbody = 	this.thisElementTable.getElementsByTagName('tbody');
-		thisElementTbody = thisElementTbody[0];
+	addContentDisplayRow(localname_value='',value_value=''){
+		var tbody = this.currTableAttrList.querySelector('tbody');
 
 		let tr_node = document.createElement('tr');
 		let td_node_localname = document.createElement('td');
@@ -193,53 +230,151 @@ export default class clsEditFunctionController{
 		let input_node_localname = document.createElement('input');
 		let input_node_value = document.createElement('textarea');
 
-		input_node_value.rows = 1;
-		input_node_localname.classList.add("element_style_localname");
-		input_node_value.classList.add("element_style_value");
+		td_node_localname.style.width = '50%';
+		td_node_value.style.width = '50%';
+
+		input_node_localname.style.width = '98%';
+		input_node_value.style.width = '98%';
 
 		td_node_localname.append(input_node_localname);
 		td_node_value.append(input_node_value);
+
 		tr_node.append(td_node_localname);
 		tr_node.append(td_node_value);
-		thisElementTbody.append(tr_node);
 
 		input_node_localname.value=localname_value;
 		input_node_value.value=value_value;
+
+		tbody.append(tr_node);
+
+		if(this.clsMouseStat.state.smallWindow == 0){
+			//if big screen/desktop
+
+		}
+
+		if(this.clsMouseStat.state.smallWindow == 1){
+			//if small screen/mobile
+			input_node_localname.style.position = 'relative';
+			input_node_localname.style.height = '5vh';
+			input_node_value.style.position = 'relative';
+			input_node_value.style.height = '5vh';
+		}
 	}
 
-	syncElementToTableValue(){
-		var tbody = this.thisElementTable.querySelector('tbody');
+	syncContentDisplayToElement(){
+		var tbody = this.currTableAttrList.querySelector('tbody');
 		var rows = tbody.querySelectorAll('tr');
-
+		var avaiable_attribute = [];
 		for(var i = 0; i< rows.length;i++){
-			var localname_el = rows[i].querySelector('.element_style_localname');
-			var value_el = rows[i].querySelector('.element_style_value');
+			var localname_el = rows[i].querySelector('input');
+			var value_el = rows[i].querySelector('textarea');
+
 			if(localname_el.value && document.activeElement != localname_el){
-				this.currActive.setAttribute(localname_el.value,value_el.value);
+				avaiable_attribute.push(localname_el.value);
+				this.activeTargetEl.setAttribute(localname_el.value,value_el.value);
 			}
 		}
+
+		//get attribute that deleted,remove it
+		var avaiable_active_attr = []
+		var active_target_avaiable_attribute = Object.values(this.activeTargetEl.attributes);
+		active_target_avaiable_attribute.forEach(attr =>{
+			avaiable_active_attr.push(attr.name)
+		})
+		var lost_attributes = avaiable_active_attr.filter(attr => !avaiable_attribute.includes(attr));
+
+		lost_attributes.forEach(lost =>{
+			this.activeTargetEl.removeAttribute(lost);
+		})
+
+		// if last row empty, add new row
+		var rows = this.currTableAttrList.querySelector('tbody').querySelectorAll('tr')
+		let lastRow = rows[rows.length - 1]
+		let lastRow_localname_el = lastRow.querySelector('input');
+		let lastRow_value_el = lastRow.querySelector('textarea');
+		if(lastRow_localname_el?.value != '' || lastRow_value_el?.value !=''){
+			this.addContentDisplayRow();
+		}
 	}
 
-	hasAncestorWithIdObj(element, idObj) { //check if id in list of object
-		// Traverse up the DOM tree
-		if(element === document.documentElement || element === document.body){ //if html or body, return true ,so it will not cause error
-			return true;
-		}
-			
-		while (element) {
-			if(element === document.documentElement || element === document.body){ //if html or body, return true ,so it will not cause error
+	getAllParent(el){
+		//find parent which can affect this (child) position
+		var vcurrElement = el;
+		var vparentElement = el;
+		var parentList = {};
+		
+		var layerParent = 0;
+		while(vparentElement && layerParent < 10){
+			if(vcurrElement === document.documentElement){ //if document element, break ,so it will not cause error
 				break;
 			}
-			
-			// Check if the current element has the specified ID
-			if (idObj[element.id]) {
-				return true;
-			}
-			// Move to the parent element
-			element = element.parentElement;
+			parentList[layerParent] = vcurrElement;
+		
+			vparentElement = vcurrElement.parentElement
+			vcurrElement = vparentElement;	
+			layerParent++;
 		}
-		// No ancestor with the specified ID found
+		return parentList;
+	}
+	
+	checkElementContainArrClass(el,arrClass){
+		var flagTrue = 0;
+		arrClass.forEach((vclassname, index) => {
+			if(el.classList.contains(vclassname)){
+				flagTrue = 1;
+				
+			}
+		});
+		
+		if(flagTrue == 1){
+			return true;
+		} else {
+			return false;
+		}
+		
+	}
+	
+	checkElementAllParentContainArrClassj(el,objClasslist) { //check if id in list of object
+		var all_parent = this.getAllParent(el);
+		
+		for(var pl=0; pl < Object.keys(all_parent).length;pl++)
+		{
+			var tmp_parent_el = Object.values(all_parent)[pl];
+			for(var ol=0; ol < Object.keys(objClasslist).length;ol++)
+			{	
+				if(Object.values(objClasslist)[ol]){
+					if(tmp_parent_el?.classList?.contains(Object.keys(objClasslist)[ol])){
+						return true;
+					}
+				}
+			}
+		}
+		
 		return false;
 	}
 	
+	ui_processor(){ //strictly for ui, dont use for any process
+		var ui_classname = 'ui_edit_function';	
+
+		var old_ui_active = document.querySelector('.'+ui_classname);			
+		old_ui_active?.classList?.remove(ui_classname);
+	
+		this.activeTargetEl?.classList?.add(ui_classname);
+	
+	}
+	
+	ui_style(){
+		var styleElement = document.createElement('style');
+		document.head.appendChild(styleElement);
+		var styleSheet = styleElement.sheet;
+		//this just to help user see the div (optional)
+		styleSheet.insertRule(`
+			.ui_edit_function{
+				min-width:10px;
+				min-height:10px;
+				background-color:#eeeeee77;
+				outline:5px dashed rgb(150,200,255);
+			}
+		`,styleSheet.cssRules.length);	
+	}
 }
