@@ -101,6 +101,11 @@ export default class clsEditFunctionController{
 			this.currentMenu.style.bottom = '';
 			this.currentMenu.style.top = this.lastMenuPos.top;
 			this.currentMenu.style.left = this.lastMenuPos.left;
+
+			var all_child_el = this.currentMenu.querySelectorAll('input,textarea,select,button');
+			all_child_el.forEach(element => {
+				element.style.fontSize = '1em';
+			});
         }
 
         if(this.clsMouseStat.state.smallWindow == 1){
@@ -109,7 +114,12 @@ export default class clsEditFunctionController{
 			this.currentMenu.style.bottom = 0+'px';
 			this.currentMenu.style.width = '100%';
 			this.currentMenu.style.height = '50%';
-        }
+
+			var all_child_el = this.currentMenu.querySelectorAll('input,textarea,select,button');
+			all_child_el.forEach(element => {
+				element.style.fontSize = '2.5em';
+			});
+		}
 	}
 	
 	menuContentDisplay(){
@@ -380,11 +390,8 @@ export default class clsEditFunctionController{
 			
 		`,styleSheet.cssRules.length);	
 		
-		styleSheet.insertRule(`
-			.clsEditFunctionController input,textarea,select,button{
-				font-size:2.5em;
-			}
-		`,styleSheet.cssRules.length);
+
+		
 		
 	}
 }
