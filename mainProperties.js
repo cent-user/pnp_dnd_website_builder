@@ -24,45 +24,99 @@ export default class clsMainProperties{
         //edit option
         var editSection = document.createElement('fieldset');
         var editSection_legend = document.createElement('legend');
-        editSection_legend.innerHTML = 'Edit Type'
-
-            //edit option css
-            var div_editType_css = document.createElement('div');
-            var editType_css = document.createElement('label');
-            editType_css.innerHTML = 'CSS';
-            editType_css.setAttribute('for','editType_css');
-            var editType_css_r = document.createElement('input');
-            editType_css_r.id = 'editType_css'
-            editType_css_r.type='radio'
-            editType_css_r.value='editType_css'
-            editType_css_r.name='mainProperties_option_1'
-
-             //edit option css
-             var div_editType_js = document.createElement('div');
-             var editType_js = document.createElement('label');
-             editType_js.innerHTML = 'JS';
-             editType_js.setAttribute('for','editType_css');
-             var editType_js_r = document.createElement('input');
-             editType_js_r.id = 'editType_css'
-             editType_js_r.type='radio'
-             editType_js_r.value='editType_js'
-             editType_js_r.name='mainProperties_option_1'
-
-
+        editSection_legend.innerHTML = 'Edit Type';
         div.appendChild(editSection);
         editSection.appendChild(editSection_legend);
-        editSection.appendChild(div_editType_css);
-            div_editType_css.appendChild(editType_css_r);
-            div_editType_css.appendChild(editType_css);
-        editSection.appendChild(div_editType_js);
-            div_editType_js.appendChild(editType_js_r);
-            div_editType_js.appendChild(editType_js);
+            var objEditType = [
+               {
+                    'name':'mainProperties_option_1'
+                    ,'text':'None'
+                    ,'value':'editType_none'
+                    ,'id':'editType_none'
+                    ,'checked':false
+                },
+                {
+                    'name':'mainProperties_option_1'
+                    ,'text':'CSS'
+                    ,'value':'editType_css'
+                    ,'id':'editType_css'
+                    ,'checked':true
+                },
+                {
+                    'name':'mainProperties_option_1'
+                    ,'text':'JS'
+                    ,'value':'editType_js'
+                    ,'id':'editType_js'
+                    ,'checked':false
+                }
+             ];
 
+            objEditType.forEach(element => {
+				var elDiv = document.createElement('div');
+                var elLabel =  document.createElement('label');
+                elLabel.innerHTML = element.text;
+                elLabel.setAttribute('for',element.id);
+                var elInput = document.createElement('input');
+                elInput.type='radio';
+                elInput.id = element.id;
+                elInput.value = element.value;
+                elInput.name= element.name;
+                elInput.checked = element.checked;
+
+                editSection.appendChild(elDiv);
+                elDiv.appendChild(elInput);
+                elDiv.appendChild(elLabel);
+			})
+
+  
+
+
+        // drag option
+          var dragSection = document.createElement('fieldset');
+          var dragSection_legend = document.createElement('legend');
+          dragSection_legend.innerHTML = 'Drag Type';
+          div.appendChild(dragSection);
+          dragSection.appendChild(dragSection_legend);
+              var objDragType = [
+                 {
+                      'name':'mainProperties_option_1'
+                      ,'text':'Fixed'
+                      ,'value':'dragType_fixed'
+                      ,'id':'dragType_fixed'
+                      ,'checked':false
+                  },
+                  {
+                      'name':'mainProperties_option_1'
+                      ,'text':'Layout'
+                      ,'value':'dragType_layout'
+                      ,'id':'dragType_layout'
+                      ,'checked':false
+                  }
+               ];
+  
+               objDragType.forEach(element => {
+                  var elDiv = document.createElement('div');
+                  var elLabel =  document.createElement('label');
+                  elLabel.innerHTML = element.text;
+                  elLabel.setAttribute('for',element.id);
+                  var elInput = document.createElement('input');
+                  elInput.type='radio';
+                  elInput.id = element.id;
+                  elInput.value = element.value;
+                  elInput.name= element.name;
+                  elInput.checked = element.checked;
+  
+                  dragSection.appendChild(elDiv);
+                  elDiv.appendChild(elInput);
+                  elDiv.appendChild(elLabel);
+              })
+  
        
-       
+        
+        document.body.appendChild(div);
 
         this.currentMenu = div;
-        document.body.appendChild(div);
+      
     }
 
  

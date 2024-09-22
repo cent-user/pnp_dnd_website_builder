@@ -14,6 +14,7 @@ export default class clsEditFunctionController{
 		this.lastMenuPos = {'top':0,'left':0};
 		this.currParentList = null;
 		this.stateTrigger = [];
+		this.lastEditType = null;
 
 		
 		
@@ -23,66 +24,93 @@ export default class clsEditFunctionController{
 	}
 	
 	process(){
-		this.currTargetEl = this.clsMouseStat.lastElementValidTarget.down;
-		
-		
-		
-		//state check
-		if(this.lastTargetEl != this.currTargetEl){ //if target change
-			if(!this.checkElementAllParentContainArrClassj(this.currTargetEl,this.clsMouseStat.invalidClass)){ //check if target contain invalid class parent,if not
-				this.stateTrigger['change_target'] = 1;
-			} else {
-				this.currTargetEl = this.lastTargetEl;
+		try {
+			
+			this.currTargetEl = this.clsMouseStat.lastElementValidTarget.down;
+			
+			//state check
+			if(this.lastEditType != this.clsMouseStat.mainProperties.editType){
+				this.lastEditType = this.clsMouseStat.mainProperties.editType;
+				this.stateTrigger['type_change'] = 1;
 			}
-		}
-		
-		if(this.currParentList){
-			if(this.activeTargetEl != this.currParentList[this.currSelectParentList.value]){
-				this.stateTrigger['change_active'] = 1;
-			}
-		}
 
-		//ui process
-		if(this.currTargetEl == null || this.currTargetEl.tagName == 'HTML' || this.clsMouseStat.lastElementValidTarget.down.id == 'clsEditFunctionController_close' ){
-			this.currentMenu.style.display = 'none';
-			this.lastTargetEl = null;
-			this.activeTargetEl = null;
-			this.currParentList = null;
-			this.ui_processor();
-		} else {
-			this.currentMenu.style.display = 'block';
+			if(this?.lastTargetEl != this?.currTargetEl){ //if target change
+				if(!this.checkElementAllParentContainArrClassj(this.currTargetEl,this.clsMouseStat.invalidClass)){ //check if target contain invalid class parent,if not
+					this.stateTrigger['change_target'] = 1;
+				} else {
+					this.currTargetEl = this.lastTargetEl;
+				}
+			}
+			
+			if(this.currParentList && this.currSelectParentList){
+				if(this.activeTargetEl != this.currParentList[this.currSelectParentList.value]){
+					this.stateTrigger['change_active'] = 1;
+				}
+			}
+
+			//ui process
+			if(this.currTargetEl == null 
+				|| this.currTargetEl.tagName == 'HTML' 
+				|| this.clsMouseStat.lastElementValidTarget.down.id == 'clsEditFunctionController_close' 
+				|| this.stateTrigger['type_change'] == 1
+			){
+				
+					this.currentMenu.style.display = 'none';
+					this.currentMenu.innerHTML = '';
+					this.lastTargetEl = null;
+					this.activeTargetEl = null;
+					this.currParentList = null;
+					this.ui_processor();
+				
+			} else {
+				if(this.clsMouseStat.mainProperties.editType == 'editType_css' || this.clsMouseStat.mainProperties.editType == 'editType_js'){
+					this.currentMenu.style.display = 'block';
+				}
+			}
+			
+			if(this.clsMouseStat.mainProperties.editType == 'editType_css'){
+				this.process_editType_css();
+			}
+			
+
+			this.stateTrigger['type_change'] = 0;
+			this.stateTrigger['change_target'] = 0;
+			this.stateTrigger['change_active'] = 0;
+		} catch (error){
+			console.error("Caught error in editFunction:", error);
 		}
-		
-		
+	}
+	
+	process_editType_css(){
 		//state process
 		if(this.stateTrigger['change_target'] == 1){
 			this.currParentList = this.getAllParent(this.currTargetEl);
 			this.lastTargetEl = this.currTargetEl;
-			
 			this.menuContentDisplay();
 			this.syncContentDisplay();
-			this.syncMenuDisplayReposition();
+			//this.syncMenuDisplayReposition();
 		}
 		
 		if(this.stateTrigger['change_active'] == 1){
-			this.activeTargetEl = this.currParentList[this.currSelectParentList.value];
-			this.ui_processor();
-			this.syncContentDisplay();
+			if(this.currParentList && this.currSelectParentList){
+				this.activeTargetEl = this.currParentList[this.currSelectParentList.value];
+				this.ui_processor();		
+				this.syncContentDisplay();
+				
+			}
 		}
 		
 		if(this.activeTargetEl){
-			this.syncContentDisplayToElement();
-			this.resizeDisplay();
+				this.resizeDisplay();
+				this.syncContentDisplayToElement();	
 		}
-		this.stateTrigger['change_target'] = 0;
-		this.stateTrigger['change_active'] = 0;
+
 	}
 	
 	menuDisplay(){
 		//component div
 		var div = document.createElement("div");
 		div.classList.add('clsEditFunctionController');
-		div.style.backgroundColor = 'red';
 		div.style.minWidth = '100px';
 		div.style.minHeight = '100px';
 		div.style.backgroundColor = '#aaddddaa';
@@ -96,22 +124,25 @@ export default class clsEditFunctionController{
 	
 	resizeDisplay(){
 		if(this.clsMouseStat.state.smallWindow == 0){
-			this.currentMenu.style.width = '';
-			this.currentMenu.style.height = '';
-			this.currentMenu.style.bottom = '';
-			this.currentMenu.style.top = this.lastMenuPos.top;
-			this.currentMenu.style.left = this.lastMenuPos.left;
+			this.currentMenu.style.width = '50%';
+			this.currentMenu.style.height = '30%';
+			this.currentMenu.style.left = '25%';
+			this.currentMenu.style.bottom = '0px';
+			
 
+			//this.currentMenu.style.top = this.lastMenuPos.top;
+			//this.currentMenu.style.left = this.lastMenuPos.left;
+			/*
 			var all_child_el = this.currentMenu.querySelectorAll('input,textarea,select,button');
 			all_child_el.forEach(element => {
 				element.style.fontSize = '1em';
-			});
+			});*/
         }
 
         if(this.clsMouseStat.state.smallWindow == 1){
 			this.currentMenu.style.top = '';
-			this.currentMenu.style.left = '';
-			this.currentMenu.style.bottom = 0+'px';
+			this.currentMenu.style.left = '0px';
+			this.currentMenu.style.bottom = '0px';
 			this.currentMenu.style.width = '100%';
 			this.currentMenu.style.height = '50%';
 
@@ -193,19 +224,22 @@ export default class clsEditFunctionController{
 			this.currSelectParentList = null;
 		}
 	}
-
+	
+	/*
 	syncMenuDisplayReposition(){
 		if(this.clsMouseStat.state.smallWindow == 0){
 			let top_offset;
 			let left_offset;
 			if(this.clsMouseStat.mouseAtSection.down == 1){
-				left_offset =  parseInt(this.currentMenu.clientHeight,10);
+				top_offset =  parseInt(this.currentMenu.clientHeight,10);
+				
 			} else {
 				top_offset = 0;
 			}
 			
 			if(this.clsMouseStat.mouseAtSection.right == 1){
 				left_offset =  parseInt(this.currentMenu.clientWidth,10);
+				console.log(left_offset);
 			} else {
 				left_offset = 0;
 			}
@@ -215,7 +249,7 @@ export default class clsEditFunctionController{
 			this.lastMenuPos.top = this.currentMenu.style.top;
 			this.lastMenuPos.left = this.currentMenu.style.left;
 		}
-	}
+	}*/
 
 	syncContentDisplay(){
 		if(this.activeTargetEl){
@@ -224,8 +258,7 @@ export default class clsEditFunctionController{
 			var attributes = this.activeTargetEl.attributes;
 			for(var i = 0; i < attributes.length;i++){
 				var localname = attributes[i].localName;
-				var localname2 = attributes[i].localName.toLowerCase()
-				this.addContentDisplayRow(localname2,attributes[i].nodeValue);
+				this.addContentDisplayRow(localname,attributes[i].nodeValue);
 			}
 
 			if(attributes.length == 0){
@@ -311,7 +344,6 @@ export default class clsEditFunctionController{
 	}
 
 	getAllParent(el){
-		//find parent which can affect this (child) position
 		var vcurrElement = el;
 		var vparentElement = el;
 		var parentList = {};

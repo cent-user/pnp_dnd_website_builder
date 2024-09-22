@@ -1,6 +1,7 @@
 import clsMainProperties from './mainProperties.js'
 import clsPropertyDisplayer from './classPropertyDisplayer.js';
 import clsEditFunctionController from './editFunction.js';
+import clsDragFunctionController from './dragFunction.js';
 
 class mouseStat {
 	constructor(){
@@ -13,6 +14,7 @@ class mouseStat {
 				'clsPropertyDisplayer':true
 				,'clsEditFunctionController':true
 				,'clsMainProperties':true
+				,'clsDragFunctionController':true
 			}
 			
 		//process element
@@ -38,12 +40,14 @@ class mouseStat {
 (function(){
 	let clsMouseStat = new mouseStat();
 	let clsEditFunction = new clsEditFunctionController(clsMouseStat);
+	let clsDragFunction = new clsDragFunctionController(clsMouseStat);
+	
 	let clsMainPropertiesMenu = new clsMainProperties(clsMouseStat)
 	
-	let display_clsMouseStat = new clsPropertyDisplayer(clsMouseStat);
+	let display_clsMouseStat = new clsPropertyDisplayer(clsDragFunction);
 	
 	syncMouseEvent(clsMouseStat);
-	
+	ui_style();
 	///////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////
 	function update(){
@@ -52,6 +56,7 @@ class mouseStat {
 		
 		statusProcessor(clsMouseStat);
 		clsEditFunction.process();
+		clsDragFunction.process();
 		display_clsMouseStat.syncMenu();
 	
 
@@ -90,7 +95,25 @@ class mouseStat {
 			clsMouseStat.mouseAtSection.up = 1;
 			clsMouseStat.mouseAtSection.down = 0;
 		}
-		
+
+	}
+
+	function ui_style(){
+		var styleElement = document.createElement('style');
+		document.head.appendChild(styleElement);
+		var styleSheet = styleElement.sheet;
+		//this just to help user see the div (optional)
+		styleSheet.insertRule(`
+			.clsPropertyDisplayer , .clsEditFunctionController ,.clsMainProperties ,.clsDragFunctionController{
+				pointer-events:none;
+
+				& * {
+					pointer-events:auto;
+				}
+			}
+
+			
+		`,styleSheet.cssRules.length);	
 	}
 	///////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////
@@ -149,7 +172,6 @@ class mouseStat {
 				
 			});
 		//
-		
 		
 	}
 })();
