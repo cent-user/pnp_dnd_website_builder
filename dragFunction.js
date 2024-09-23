@@ -102,12 +102,12 @@ export default class clsDragFunctionController{
 
 		if(this.clsMouseStat.click == 1){
 			//if el is null and the clicked is not part of plugin
-			if(this.currTargetEl_layout_from == null && !this.checkElementAllParentContainArrClassj(this.clsMouseStat.lastElementValidTarget.down,this.clsMouseStat.invalidClass)){
+			if(this.currTargetEl_layout_from == null && !this.checkElementAllParentContainArrClassj(this.currTargetEl,this.clsMouseStat.invalidClass)){
 				this.currTargetEl_layout_from =  this.currTargetEl;
 			}
 
 			//if el is null and the clicked is not part of plugin
-			if(this.currTargetEl_layout_to == null && !this.checkElementAllParentContainArrClassj(this.clsMouseStat.lastElementValidTarget.down,this.clsMouseStat.invalidClass)){
+			if(this.currTargetEl_layout_to == null && !this.checkElementAllParentContainArrClassj(this.currTargetEl,this.clsMouseStat.invalidClass)){
 				this.currTargetEl_layout_to =  this.currTargetEl;
 			}
 
@@ -248,6 +248,7 @@ export default class clsDragFunctionController{
 				this.activeTargetEl_layout_from = null;
 				this.currParentList_layout_from = null;
 				this.currDivElement_layout_from = null
+				this.clsMouseStat.lastElementValidTarget.down = null; //because on click delete, reset so it will not cause bug
 
 			}.bind(this));
 		}
@@ -260,7 +261,8 @@ export default class clsDragFunctionController{
 				this.lastTargetEl_layout_to = null;
 				this.activeTargetEl_layout_to = null;
 				this.currParentList_layout_to = null;
-				this.currDivElement_layout_to = null
+				this.currDivElement_layout_to = null;
+				this.clsMouseStat.lastElementValidTarget.down = null; //because on click delete, reset so it will not cause bug
 
 			}.bind(this));
 		}
@@ -384,7 +386,6 @@ export default class clsDragFunctionController{
 		var old_ui_active_to = document.querySelector('.'+ui_classname_layout_to);			
 		old_ui_active_to?.classList?.remove(ui_classname_layout_to);
 
-		console.log(this.activeTargetEl_layout_from);
 		this.activeTargetEl_layout_from?.classList?.add(ui_classname_layout_from);
 		this.activeTargetEl_layout_to?.classList?.add(ui_classname_layout_to);
 	
