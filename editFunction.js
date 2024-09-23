@@ -26,7 +26,9 @@ export default class clsEditFunctionController{
 	process(){
 		try {
 			
-			this.currTargetEl = this.clsMouseStat.lastElementValidTarget.down;
+			if(!this.checkElementAllParentContainArrClassj(this.clsMouseStat.lastElementValidTarget.down,this.clsMouseStat.invalidClass)){ //check if target contain invalid class parent,if not
+		    	this.currTargetEl = this.clsMouseStat.lastElementValidTarget.down;
+            }
 			
 			//state check
 			if(this.lastEditType != this.clsMouseStat.mainProperties.editType){
@@ -224,33 +226,6 @@ export default class clsEditFunctionController{
 			this.currSelectParentList = null;
 		}
 	}
-	
-	/*
-	syncMenuDisplayReposition(){
-		if(this.clsMouseStat.state.smallWindow == 0){
-			let top_offset;
-			let left_offset;
-			if(this.clsMouseStat.mouseAtSection.down == 1){
-				top_offset =  parseInt(this.currentMenu.clientHeight,10);
-				
-			} else {
-				top_offset = 0;
-			}
-			
-			if(this.clsMouseStat.mouseAtSection.right == 1){
-				left_offset =  parseInt(this.currentMenu.clientWidth,10);
-				console.log(left_offset);
-			} else {
-				left_offset = 0;
-			}
-			this.currentMenu.style.top = this.clsMouseStat.page.y - top_offset +'px';
-			this.currentMenu.style.left = this.clsMouseStat.page.x - left_offset +'px';
-
-			this.lastMenuPos.top = this.currentMenu.style.top;
-			this.lastMenuPos.left = this.currentMenu.style.left;
-		}
-	}*/
-
 	syncContentDisplay(){
 		if(this.activeTargetEl){
 			var tbody = this.currTableAttrList.querySelector('tbody');

@@ -5,6 +5,7 @@ import clsDragFunctionController from './dragFunction.js';
 
 class mouseStat {
 	constructor(){
+		this.click = 0;
 		this.client = {x:0,y:0} 
 		this.screen = {x:0,y:0} 
 		this.page = {x:0,y:0} 
@@ -44,7 +45,7 @@ class mouseStat {
 	
 	let clsMainPropertiesMenu = new clsMainProperties(clsMouseStat)
 	
-	let display_clsMouseStat = new clsPropertyDisplayer(clsDragFunction);
+	//let display_clsMouseStat = new clsPropertyDisplayer(clsDragFunction);
 	
 	syncMouseEvent(clsMouseStat);
 	ui_style();
@@ -57,9 +58,9 @@ class mouseStat {
 		statusProcessor(clsMouseStat);
 		clsEditFunction.process();
 		clsDragFunction.process();
-		display_clsMouseStat.syncMenu();
+		//display_clsMouseStat.syncMenu();
 	
-
+		clsMouseStat.click = 0;
 		requestAnimationFrame(update.bind(this));
 	}
 	requestAnimationFrame(update.bind(this));
@@ -148,7 +149,7 @@ class mouseStat {
 				clsMouseStat.page = {'x':e.pageX,'y':e.pageY};
 				
 				clsMouseStat.lastElementTarget.down = e.target;
-						
+				clsMouseStat.click = 1;		
 			});
 			
 			document.addEventListener('touchstart',function(e){
