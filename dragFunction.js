@@ -103,12 +103,12 @@ export default class clsDragFunctionController{
 		if(this.clsMouseStat.click == 1){
 			//if el is null and the clicked is not part of plugin
 			if(this.currTargetEl_layout_from == null && !this.checkElementAllParentContainArrClassj(this.clsMouseStat.lastElementValidTarget.down,this.clsMouseStat.invalidClass)){
-				this.currTargetEl_layout_from =  this.clsMouseStat.lastElementValidTarget.down;
+				this.currTargetEl_layout_from =  this.currTargetEl;
 			}
 
 			//if el is null and the clicked is not part of plugin
 			if(this.currTargetEl_layout_to == null && !this.checkElementAllParentContainArrClassj(this.clsMouseStat.lastElementValidTarget.down,this.clsMouseStat.invalidClass)){
-				this.currTargetEl_layout_to =  this.clsMouseStat.lastElementValidTarget.down;
+				this.currTargetEl_layout_to =  this.currTargetEl;
 			}
 
 			if(this.currTargetEl_layout_from != this.lastTargetEl_layout_from){ //if different
@@ -246,6 +246,8 @@ export default class clsDragFunctionController{
 				this.currTargetEl_layout_from = null;
 				this.lastTargetEl_layout_from = null;
 				this.activeTargetEl_layout_from = null;
+				this.currParentList_layout_from = null;
+				this.currDivElement_layout_from = null
 
 			}.bind(this));
 		}
@@ -257,6 +259,9 @@ export default class clsDragFunctionController{
 				this.currTargetEl_layout_to = null;
 				this.lastTargetEl_layout_to = null;
 				this.activeTargetEl_layout_to = null;
+				this.currParentList_layout_to = null;
+				this.currDivElement_layout_to = null
+
 			}.bind(this));
 		}
 
