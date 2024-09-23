@@ -48,7 +48,9 @@ export default class clsDragFunctionController{
         try {
             if(!this.checkElementAllParentContainArrClassj(this.clsMouseStat.lastElementValidTarget.down,this.clsMouseStat.invalidClass)){ //check if target contain invalid class parent,if not
 		    	this.currTargetEl = this.clsMouseStat.lastElementValidTarget.down;
-            }
+            } else {
+				this.currTargetEl = null;
+			}
 
 			//state check
 			if(this.lastEditType != this.clsMouseStat.mainProperties.editType){
