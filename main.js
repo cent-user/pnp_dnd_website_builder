@@ -45,7 +45,7 @@ class mouseStat {
 	
 	let clsMainPropertiesMenu = new clsMainProperties(clsMouseStat)
 	
-	//let display_clsMouseStat = new clsPropertyDisplayer(clsDragFunction);
+	let display_clsMouseStat = new clsPropertyDisplayer(clsDragFunction);
 	
 	syncMouseEvent(clsMouseStat);
 	ui_style();
@@ -58,8 +58,8 @@ class mouseStat {
 		statusProcessor(clsMouseStat);
 		clsEditFunction.process();
 		clsDragFunction.process();
-		//display_clsMouseStat.syncMenu();
-	
+		display_clsMouseStat.syncMenu();
+		
 		clsMouseStat.click = 0;
 		requestAnimationFrame(update.bind(this));
 	}
