@@ -38,7 +38,7 @@ export default class clsMainProperties{
                     ,'text':'None'
                     ,'value':'editType_none'
                     ,'id':'editType_none'
-                    ,'checked':false
+                    ,'checked':true
                     ,'disabled':false
                 },
                 {
@@ -46,7 +46,7 @@ export default class clsMainProperties{
                     ,'text':'CSS'
                     ,'value':'editType_css'
                     ,'id':'editType_css'
-                    ,'checked':true
+                    ,'checked':false
                     ,'disabled':false
                 },
                 {
@@ -55,7 +55,7 @@ export default class clsMainProperties{
                     ,'value':'editType_js'
                     ,'id':'editType_js'
                     ,'checked':false
-                    ,'disabled':true
+                    ,'disabled':false
                 }
              ];
 
@@ -126,13 +126,14 @@ export default class clsMainProperties{
        
         //open / close menu
         var div_btn_open_close = document.createElement('button');
-        div_btn_open_close.style.width = '20px';
+        div_btn_open_close.style.width = '50px';
         div_btn_open_close.style.height = '20px';
-        div_btn_open_close.style.backgroundColor = 'purple';
+        div_btn_open_close.style.backgroundColor = '#aaaaff';
         div_btn_open_close.style.position = 'relative';
-        div_btn_open_close.style.left = '-20px';
+        div_btn_open_close.style.left = '-50px';
         div_btn_open_close.style.top = '0px';
-       
+        div_btn_open_close.innerHTML = 'Edit';
+
         div_content.appendChild(editSection);
         div_content.appendChild(dragSection);
         div.appendChild(div_content);
@@ -169,9 +170,19 @@ export default class clsMainProperties{
 
         if(this.stateTrigger['open_div'] == true){
             this.currentMenu_content.style.display = 'block';
+            this.currentMenu.style.zIndex = '3'; 
         } else {
             this.currentMenu.style.width = '0px';
+            
             this.currentMenu_content.style.display = 'none';
+            this.currentMenu.style.zIndex = '1'; //if hidden, lwoer the zindex
+
+            /*
+            var editType_checked =  document.querySelector('input[name=mainProperties_option_1]:checked')
+            if(editType_checked){
+             editType_checked.checked = false;
+            }
+            */
         }
     }
 }

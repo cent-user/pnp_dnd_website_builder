@@ -222,16 +222,37 @@ export default class clsDragFunctionController{
         div_to_section.insertAdjacentElement('afterbegin',selectParent_to);
        
 
+		var div_insert_str = `
+			<div>
+				<div style='display:flex;flex-direction:column;width:100%'>
 
+					<select id='dragType_layout_appendType' style="width:100%">
+						<option value='beforebegin'>Before Begin</option>
+						<option value='afterbegin'>After Begin</option>
+						<option value='beforeend'>Before End</option>
+						<option value='afterend'>After End</option>
+					</select>
+
+					<button id='dragType_layout_submit_insertTo'
+					style="width:100%"
+					>Insert To</button>
+
+				</div>
+			</div>
+		`;
+
+		var div_insert = this.createComponentFromString(div_insert_str);
 		var btn_submit_insertTo = document.createElement('button');
 		btn_submit_insertTo.id = "dragType_layout_submit_insertTo";
 		btn_submit_insertTo.innerHTML = "Insert To";
 		btn_submit_insertTo.style.width = '100%';
 		
+		
+
 		flexDiv.appendChild(div_from_section);
 		flexDiv.appendChild(div_to_section);
 		this.currentMenu.appendChild(flexDiv);
-		this.currentMenu.appendChild(btn_submit_insertTo);
+		this.currentMenu.appendChild(div_insert);
 
 		this.currDivElement_layout_from = div_from_section;
 		this.currDivElement_layout_to = div_to_section;
@@ -268,10 +289,13 @@ export default class clsDragFunctionController{
 		}
 
 		var btn_submit_insertTo = this.currentMenu.querySelector('#dragType_layout_submit_insertTo');
+		var append_type =  this.currentMenu.querySelector('#dragType_layout_appendType');
 		if(btn_submit_insertTo){
 			btn_submit_insertTo.addEventListener('click',function(){
 				var cloneNode = this.activeTargetEl_layout_from.cloneNode(true);
-				this.activeTargetEl_layout_to.insertAdjacentElement('beforeend',cloneNode);
+
+				this.activeTargetEl_layout_to.insertAdjacentElement(append_type.value,cloneNode);
+
 				this.activeTargetEl_layout_from.remove();
 
 				this.stateTrigger['reset_all'] = 1;
@@ -393,6 +417,7 @@ export default class clsDragFunctionController{
 	
 	ui_style(){
 		var styleElement = document.createElement('style');
+		styleElement.classList.add('clsDragFunctionController');
 		document.head.appendChild(styleElement);
 		var styleSheet = styleElement.sheet;
 		//this just to help user see the div (optional)

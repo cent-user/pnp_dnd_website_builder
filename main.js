@@ -2,6 +2,8 @@ import clsMainProperties from './mainProperties.js'
 import clsPropertyDisplayer from './classPropertyDisplayer.js';
 import clsEditFunctionController from './editFunction.js';
 import clsDragFunctionController from './dragFunction.js';
+import clsObjectMenu from './objectMenu.js';
+import clsExportHtmlMenuController from './exportHtmlMenu.js';
 
 class mouseStat {
 	constructor(){
@@ -10,12 +12,14 @@ class mouseStat {
 		this.screen = {x:0,y:0} 
 		this.page = {x:0,y:0} 
 		this.lastElementTarget = {down:null,up:null} //if touch, up can be not consistent when moved, use down
-		this.invalidClass = //element with this class mean the element is part of plugin
+		this.invalidClass = //element with this class mean the element is part of plugin, will be removed when exported
 			{
 				'clsPropertyDisplayer':true
 				,'clsEditFunctionController':true
 				,'clsMainProperties':true
 				,'clsDragFunctionController':true
+				,'clsObjectMenu':true
+				,'jsl_plugin_main_script':true
 			}
 			
 		//process element
@@ -42,10 +46,12 @@ class mouseStat {
 	let clsMouseStat = new mouseStat();
 	let clsEditFunction = new clsEditFunctionController(clsMouseStat);
 	let clsDragFunction = new clsDragFunctionController(clsMouseStat);
-	
+	let clsObjectMenuv = new clsObjectMenu(clsMouseStat);
 	let clsMainPropertiesMenu = new clsMainProperties(clsMouseStat)
+	let clsExportHtmlMenu = new clsExportHtmlMenuController(clsMouseStat)
 	
-	let display_clsMouseStat = new clsPropertyDisplayer(clsDragFunction);
+	
+	//let display_clsMouseStat = new clsPropertyDisplayer(clsDragFunction);
 	
 	syncMouseEvent(clsMouseStat);
 	ui_style();
@@ -53,12 +59,14 @@ class mouseStat {
 	///////////////////////////////////////////////////////
 	function update(){
 		clsMainPropertiesMenu.process();
+		clsObjectMenuv.process();
+		clsExportHtmlMenu.process();
 		clsMouseStat.mainProperties.editType = clsMainPropertiesMenu.editType_checked;
 		
 		statusProcessor(clsMouseStat);
 		clsEditFunction.process();
 		clsDragFunction.process();
-		display_clsMouseStat.syncMenu();
+		//display_clsMouseStat.syncMenu();
 		
 		clsMouseStat.click = 0;
 		requestAnimationFrame(update.bind(this));
